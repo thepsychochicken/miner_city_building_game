@@ -4,7 +4,7 @@ public class Person {
 	public FloatPos pos;
 	public FloatPos lastPos;
 	public Person() {
-		pos = new FloatPos( (double) 0, (double) 0 );
+		pos = new FloatPos( (double) 64, (double) 20 );
 		lastPos = new FloatPos( (double) 0, (double) 0 );
 	}
 

@@ -24,12 +24,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	int heightAmp = 30;
 	boolean leftArrowLast, rightArrowLast, downArrowLast, upArrowLast;
 	int[][][] world; // x = x pos, y = y pos, z1 = block type, z2 = link to object
-	SlidePos box;
 	int zoom;
 	Camera camera;
 	MyInput input;
 	Person player = new Person();
 
+	Pos mapPos = new Pos( 0, 0 );
 	Pos drawPos = new Pos( 0, 0 );
 
 
@@ -95,7 +95,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			mapgen[i].setSeed( seed + 512 );
 			mapgen[i].setHeightAmp(heightAmp);
 		}
-		box = new SlidePos(0,0,300);
 		resize(screenW, screenH);
 		screenW = Gdx.graphics.getWidth();
 		screenH = Gdx.graphics.getHeight();
@@ -110,12 +109,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		if (mouse.x != Gdx.input.getX()) {
 			mouse.x = Gdx.input.getX();
 			mapMouse.x = (int)(mouse.x / camera.blockSize);
-			box.setPos(mouse.x,mouse.y);
 		}
 		if (mouse.y != screenH - Gdx.input.getY()) {
 			mouse.y = screenH - Gdx.input.getY();
 			mapMouse.y = (int)(mouse.y / camera.blockSize);
-			box.setPos(mouse.x,mouse.y);
 		}
 
 		if (input.deltaY != 0) {
@@ -232,27 +229,27 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Movement
 
 		if (dirLeft) {
-			player.pos.x -= 1;
+			player.pos.x -= 0.25d;
 		}
 		if (dirRight) {
-			player.pos.x += 1;
+			player.pos.x += 0.25d;
 		}
 		if (dirUp) {
-			player.pos.y += 1;
+			player.pos.y += 0.25d;
 		}
 		if (dirDown) {
-			player.pos.y -= 1;
+			player.pos.y -= 0.25d;
 		}
 
-		player.calc();
 
-		box.calc();
+
 		if ( player.lastPos.x != player.pos.x || player.lastPos.y != player.pos.y ) {
 			camera.setPos( 
 				( int )( ( player.pos.x * camera.blockSize ) - ( screenW / 2 ) ) -  camera.blockSize,
 			 	( int )( ( player.pos.y * camera.blockSize ) - ( screenH / 2 ) ) -  camera.blockSize
 			);
 		}
+		player.calc();
 		camera.update();
 
 		// Rendering
@@ -260,35 +257,39 @@ public class MyGdxGame extends ApplicationAdapter {
 		//System.out.println("Camera is at: " + camera.pos.x + ", " + camera.pos.y );
 		Gdx.gl.glClearColor( ( float ) 0.2, ( float ) 0.5, ( float ) 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+		int subtractDrawX = camera.pos.x - ( ( ( int )( camera.pos.x / camera.blockSize ) * camera.blockSize ) - camera.pos.x );
+		int subtractDrawY = camera.pos.y - ( ( ( int )( camera.pos.y / camera.blockSize ) * camera.blockSize ) - camera.pos.y );
 		batch.begin();
 		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x += camera.blockSize ) {
 			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y += camera.blockSize ) {
-				drawPos.x = ( int )( x / camera.blockSize );
-				drawPos.y = ( int )( y / camera.blockSize );
-				if ( drawPos.y > 0 && drawPos.x > 0 && drawPos.x < world.length ) {
-					if ( drawPos.y < world[drawPos.x].length ) {
+				mapPos.x = ( int )( x / camera.blockSize );
+				mapPos.y = ( int )( y / camera.blockSize );
+				if ( mapPos.y > 0 && mapPos.x > 0 && mapPos.x < world.length ) {
+					if ( mapPos.y < world[mapPos.x].length ) {
+						drawPos.x = x - subtractDrawX;
+						drawPos.y = y - subtractDrawY;
+						//drawPos.x = x - camera.pos.x;
+						//drawPos.y = y - camera.pos.y;
 						//System.out.println("Rendering block at: " + ( x - camera.pos.x ) + ", " + ( y - camera.pos.y ));
 						//System.out.println("Drawing tile at: " + drawPos.x + ", " + drawPos.y);
-						switch( world[ drawPos.x ][ drawPos.y ][ 0 ] ) {
+						switch( world[ mapPos.x ][ mapPos.y ][ 0 ] ) {
 							case 1:
-								draw( dirt, x - camera.pos.x, y - camera.pos.y );
+								draw( dirt, drawPos.x, drawPos.y );
 								break;
 							case 2:
-								draw( grass, x - camera.pos.x, y - camera.pos.y );
+								draw( grass, drawPos.x, drawPos.y );
 								break;
 							case 3:
-								draw( stone, x - camera.pos.x, y - camera.pos.y );
+								draw( stone, drawPos.x, drawPos.y );
 								break;
 						}
-						if (drawPos.x == mapMouse.x && drawPos.y == mapMouse.y) {
-							draw( selection, x - camera.pos.x, y - camera.pos.y );
+						if (mapPos.x == mapMouse.x && mapPos.y == mapMouse.y) {
+							draw( selection, drawPos.x, drawPos.y );
 						}
 					}
 				}
 			}
 		}
-		batch.draw( stone, box.x-10, box.y-10, 20, 20 );
 		batch.end();
 
 	}
