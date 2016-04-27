@@ -66,7 +66,7 @@ public class MapGenerator {
 			adder += (getNoise(x+i) + getNoise(x-i)) * ( amp / i );
 			divider += ( amp * 2 ) / i;
 		}
-		return (int)( ( ( adder / divider ) ) ) + 5;
+		return (int)( ( ( adder / divider ) ) ) + 30;
 	}
 
 	private int getNoise(int x) {

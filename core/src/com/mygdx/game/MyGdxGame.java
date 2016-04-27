@@ -30,6 +30,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	MyInput input;
 	Person player = new Person();
 
+	Pos drawPos = new Pos( 0, 0 );
+
 
 	private int getBlockAt( int x, int y ) {
 		int blockType = 0;
@@ -48,8 +50,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	private void reloadMap() {
 		int blockType;
-		for (int x = 0; x < screenW/blockSize; x++ ) {
-			for (int y = 0; y < screenH/blockSize; y++ ) {
+		for (int x = 0; x < world.length; x++ ) {
+			for (int y = 0; y < world[x].length; y++ ) {
 				blockType = getBlockAt( x, y );
 				if (blockType == 1 && getBlockAt( x, y + 1 ) == 0)  {
 					blockType = 2;
@@ -85,7 +87,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		grass = new Texture("grass.png");
 		zoom = 80;
 		selection = new Texture("selection.png");
-		world = new int[ 16 * 5 ][ 16 * 5 ][2];
+		world = new int[ 16 * 10 ][ 16 * 10 ][2];
 		mapgen = new MapGenerator[2];
 		System.out.println("Test");
 		for ( int i = 0; i < mapgen.length; i++ ) {
@@ -107,18 +109,20 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Events
 		if (mouse.x != Gdx.input.getX()) {
 			mouse.x = Gdx.input.getX();
-			mapMouse.x = (int)(mouse.x / blockSize);
+			mapMouse.x = (int)(mouse.x / camera.blockSize);
 			box.setPos(mouse.x,mouse.y);
 		}
 		if (mouse.y != screenH - Gdx.input.getY()) {
 			mouse.y = screenH - Gdx.input.getY();
-			mapMouse.y = (int)(mouse.y / blockSize);
+			mapMouse.y = (int)(mouse.y / camera.blockSize);
 			box.setPos(mouse.x,mouse.y);
 		}
 
 		if (input.deltaY != 0) {
 			//System.out.println("MOUSE WAS SCROLLED");
-			zoom += input.deltaY*5;
+			zoom -= input.deltaY*5;
+			if (zoom < 15) {zoom = 15;}
+			else if (zoom > 300) {zoom = 300;}
 			camera.setZoom(zoom);
 			input.deltaY = 0;
 		}
@@ -245,34 +249,41 @@ public class MyGdxGame extends ApplicationAdapter {
 		box.calc();
 		if ( player.lastPos.x != player.pos.x || player.lastPos.y != player.pos.y ) {
 			camera.setPos( 
-				( int )( player.pos.x - (screenW/2/camera.blockSize) ),
-			 	( int )( player.pos.y - (screenH/2/camera.blockSize) ) 
+				( int )( ( player.pos.x * camera.blockSize ) - ( screenW / 2 ) ) -  camera.blockSize,
+			 	( int )( ( player.pos.y * camera.blockSize ) - ( screenH / 2 ) ) -  camera.blockSize
 			);
 		}
 		camera.update();
 
 		// Rendering
-
+		//System.out.println("Camera size is: " + ( camera.endPos.x - camera.pos.x ) + ", " + ( camera.endPos.y - camera.pos.y ));
+		//System.out.println("Camera is at: " + camera.pos.x + ", " + camera.pos.y );
 		Gdx.gl.glClearColor( ( float ) 0.2, ( float ) 0.5, ( float ) 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		batch.begin();
-		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x+= camera.blockSize ) {
-			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y++ ) {
-				if (y > 0 && x > 0) {
-					switch(world[x][y][0]) {
-						case 1:
-							draw( dirt, x, y );
-							break;
-						case 2:
-							draw( grass, x, y );
-							break;
-						case 3:
-							draw( stone, x, y );
-							break;
-					}
-					if (x == mapMouse.x && y == mapMouse.y) {
-						draw( selection, x, y );
+		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x += camera.blockSize ) {
+			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y += camera.blockSize ) {
+				drawPos.x = ( int )( x / camera.blockSize );
+				drawPos.y = ( int )( y / camera.blockSize );
+				if ( drawPos.y > 0 && drawPos.x > 0 && drawPos.x < world.length ) {
+					if ( drawPos.y < world[drawPos.x].length ) {
+						//System.out.println("Rendering block at: " + ( x - camera.pos.x ) + ", " + ( y - camera.pos.y ));
+						//System.out.println("Drawing tile at: " + drawPos.x + ", " + drawPos.y);
+						switch( world[ drawPos.x ][ drawPos.y ][ 0 ] ) {
+							case 1:
+								draw( dirt, x - camera.pos.x, y - camera.pos.y );
+								break;
+							case 2:
+								draw( grass, x - camera.pos.x, y - camera.pos.y );
+								break;
+							case 3:
+								draw( stone, x - camera.pos.x, y - camera.pos.y );
+								break;
+						}
+						if (drawPos.x == mapMouse.x && drawPos.y == mapMouse.y) {
+							draw( selection, x - camera.pos.x, y - camera.pos.y );
+						}
 					}
 				}
 			}
@@ -282,6 +293,6 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	}
 	private void draw( Texture texture, int x, int y ) {
-		batch.draw( texture, x*camera.blockSize, y*camera.blockSize, camera.blockSize, camera.blockSize );
+		batch.draw( texture, x, y, camera.blockSize, camera.blockSize );
 	}
 }

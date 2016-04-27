@@ -18,8 +18,8 @@ public class Camera {
 	public void update() {
 		this.pos.calc();
 		this.blockSize = this.zoom.getPoint();
-		this.endPos.x = this.pos.x+( int )( this.screenW / this.blockSize ) + 1;
-		this.endPos.y = this.pos.y+( int )( this.screenH / this.blockSize ) + 1;
+		this.endPos.x = this.pos.x + this.screenW + this.blockSize;
+		this.endPos.y = this.pos.y + this.screenH + this.blockSize;
 	}
 
 	public void setZoom(int zoom) {
