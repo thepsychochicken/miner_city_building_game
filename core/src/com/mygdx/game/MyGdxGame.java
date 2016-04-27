@@ -30,6 +30,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	MyInput input;
 	Person player = new Person();
 
+
 	private int getBlockAt( int x, int y ) {
 		int blockType = 0;
 		int minInt = 1000;
@@ -238,6 +239,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		if (dirDown) {
 			player.pos.y -= 1;
 		}
+
+		player.calc();
 
 		box.calc();
 		if ( player.lastPos.x != player.pos.x || player.lastPos.y != player.pos.y ) {

@@ -5,6 +5,7 @@ public class Person {
 	public FloatPos lastPos;
 	public Person() {
 		pos = new FloatPos( (double) 0, (double) 0 );
+		lastPos = new FloatPos( (double) 0, (double) 0 );
 	}
 
 	public void calc() {
