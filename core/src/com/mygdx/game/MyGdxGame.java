@@ -56,8 +56,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int x = 0; x < world.length; x++ ) {
 			for (int y = 0; y < world[x].length; y++ ) {
 				blockType = getBlockAt( x, y );
-				if (blockType == 1 && getBlockAt( x, y + 1 ) == 0)  {
-					blockType = 2;
+				if (blockType == TILE.DIRT && getBlockAt( x, y + 1 ) == TILE.AIR)  {
+					blockType = TILE.GRASS;
 				}
 				world[x][y][0] = blockType;
 				world[x][y][1] = 0;
@@ -68,6 +68,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create () {
 		input = new MyInput();
 		Gdx.input.setInputProcessor(input);
+
 		mouse = new Pos( 0, 0 );
 		mapMouse = new Pos( 0, 0 );
 		blockSize = 50;
@@ -83,22 +84,28 @@ public class MyGdxGame extends ApplicationAdapter {
 		rightArrowLast = false;
 		upArrowLast = false;
 		downArrowLast = false;
+
 		batch = new SpriteBatch();
 		stone = new Texture("stone.png");
 		dirt = new Texture("dirt.png");
 		iron_ore = new Texture("iron-ore.png");
 		grass = new Texture("grass.png");
-		zoom = 80;
 		selection = new Texture("selection.png");
+		
+		zoom = 80;
 		world = new int[ 16 * 10 ][ 16 * 10 ][2];
 		mapgen = new MapGenerator[2];
+
 		System.out.println("Test");
+		
 		for ( int i = 0; i < mapgen.length; i++ ) {
 			mapgen[i] = new MapGenerator();
 			mapgen[i].setSeed( seed + 512 );
 			mapgen[i].setHeightAmp(heightAmp);
 		}
-		resize(screenW, screenH);
+		
+		//resize(screenW, screenH); // LibGDX will call this by itself after create()
+		
 		screenW = Gdx.graphics.getWidth();
 		screenH = Gdx.graphics.getHeight();
 		camera = new Camera( screenW, screenH );
@@ -115,12 +122,78 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// If possible, make render just call player.render(), camera.render(), person.render() and so on.
 		// Just call render functions in different classes in the right order of course. Maybe add a "loop" function in all classes too or something
-
+		HandleInput(input);
 
 		//System.out.println("Got to frame " + frameCount);
 
 		// Put events, movement and such into a function, to make it more clear what render is doing
 		
+		player.calc(); // Calc what?
+		camera.update();
+
+		// Rendering
+		//System.out.println("Camera size is: " + ( camera.endPos.x - camera.pos.x ) + ", " + ( camera.endPos.y - camera.pos.y ));
+		//System.out.println("Camera is at: " + camera.pos.x + ", " + camera.pos.y );
+		Gdx.gl.glClearColor( ( float ) 0.2, ( float ) 0.5, ( float ) 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		int subtractDrawX = camera.pos.x - ( ( ( int )( camera.pos.x / camera.blockSize ) * camera.blockSize ) - camera.pos.x ); // I have no idea what this is
+		int subtractDrawY = camera.pos.y - ( ( ( int )( camera.pos.y / camera.blockSize ) * camera.blockSize ) - camera.pos.y );
+
+		mapMouse.x = (int)( ( camera.pos.x + mouse.x ) / camera.blockSize);
+		mapMouse.y = (int)( ( camera.pos.y + mouse.y ) / camera.blockSize);
+
+		batch.begin();
+		
+		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x += camera.blockSize ) {
+			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y += camera.blockSize ) { // Loops through all blocks in sight by screenposition
+				mapPos.x = ( int )( x / camera.blockSize ); // Calculates block position in grid (wutthafuck?)
+				mapPos.y = ( int )( y / camera.blockSize );
+				if ( mapPos.y > 0 && mapPos.x > 0 && mapPos.x < world.length ) { // Why not check for mappos here too?
+					if ( mapPos.y < world[mapPos.x].length ) {
+						drawPos.x = x - subtractDrawX;
+						drawPos.y = y - subtractDrawY;
+						
+						//drawPos.x = x - camera.pos.x;
+						//drawPos.y = y - camera.pos.y;
+						//System.out.println("Rendering block at: " + ( x - camera.pos.x ) + ", " + ( y - camera.pos.y ));
+						//System.out.println("Drawing tile at: " + drawPos.x + ", " + drawPos.y);
+						
+
+						// This switch could be a function like "DrawTile(int type, int x, int y)"
+						drawTile(drawPos, world[ mapPos.x ][ mapPos.y ][ 0 ]);
+
+						if (mapPos.x == mapMouse.x && mapPos.y == mapMouse.y) { // And if the mouse is here, draw a "selected" box thingy around
+							draw( selection, drawPos.x, drawPos.y );
+						}
+					}
+				}
+			}
+		}
+		batch.end();
+
+	}
+
+	private void drawTile(Pos drawPos, int type) {
+		switch( type ) { // Checks which texture to draw without using a enum apparently :P
+			case TILE.DIRT: // 1
+				draw( dirt, drawPos.x, drawPos.y );
+				break;
+			case TILE.GRASS: // 2
+				draw( grass, drawPos.x, drawPos.y );
+				break;
+			case TILE.STONE: // 3
+				draw( stone, drawPos.x, drawPos.y );
+				break;
+		}
+	}
+
+	private void draw( Texture texture, int x, int y ) {
+		batch.draw( texture, x, y, camera.blockSize, camera.blockSize );
+	}
+
+	private void HandleInput(MyInput input) {
+		// Adjust everything in here to take input from MyInput
 		// Events
 		if (mouse.x != Gdx.input.getX()) {
 			mouse.x = Gdx.input.getX();
@@ -265,61 +338,5 @@ public class MyGdxGame extends ApplicationAdapter {
 			);
 		}
 
-		player.calc(); // Calc what?
-		camera.update();
-
-		// Rendering
-		//System.out.println("Camera size is: " + ( camera.endPos.x - camera.pos.x ) + ", " + ( camera.endPos.y - camera.pos.y ));
-		//System.out.println("Camera is at: " + camera.pos.x + ", " + camera.pos.y );
-		Gdx.gl.glClearColor( ( float ) 0.2, ( float ) 0.5, ( float ) 1, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		int subtractDrawX = camera.pos.x - ( ( ( int )( camera.pos.x / camera.blockSize ) * camera.blockSize ) - camera.pos.x ); // I have no idea what this is
-		int subtractDrawY = camera.pos.y - ( ( ( int )( camera.pos.y / camera.blockSize ) * camera.blockSize ) - camera.pos.y );
-
-		mapMouse.x = (int)( ( camera.pos.x + mouse.x ) / camera.blockSize);
-		mapMouse.y = (int)( ( camera.pos.y + mouse.y ) / camera.blockSize);
-
-		batch.begin();
-		
-		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x += camera.blockSize ) {
-			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y += camera.blockSize ) { // Loops through all blocks in sight by screenposition
-				mapPos.x = ( int )( x / camera.blockSize ); // Calculates block position in grid (wutthafuck?)
-				mapPos.y = ( int )( y / camera.blockSize );
-				if ( mapPos.y > 0 && mapPos.x > 0 && mapPos.x < world.length ) { // Why not check for mappos here too?
-					if ( mapPos.y < world[mapPos.x].length ) {
-						drawPos.x = x - subtractDrawX;
-						drawPos.y = y - subtractDrawY;
-						
-						//drawPos.x = x - camera.pos.x;
-						//drawPos.y = y - camera.pos.y;
-						//System.out.println("Rendering block at: " + ( x - camera.pos.x ) + ", " + ( y - camera.pos.y ));
-						//System.out.println("Drawing tile at: " + drawPos.x + ", " + drawPos.y);
-						
-
-						// This switch could be a function like "DrawTile(int type, int x, int y)"
-						switch( world[ mapPos.x ][ mapPos.y ][ 0 ] ) { // Checks which texture to draw without using a enum apparently :P
-							case 1:
-								draw( dirt, drawPos.x, drawPos.y );
-								break;
-							case 2:
-								draw( grass, drawPos.x, drawPos.y );
-								break;
-							case 3:
-								draw( stone, drawPos.x, drawPos.y );
-								break;
-						}
-						if (mapPos.x == mapMouse.x && mapPos.y == mapMouse.y) { // And if the mouse is here, draw a "selected" box thingy around
-							draw( selection, drawPos.x, drawPos.y );
-						}
-					}
-				}
-			}
-		}
-		batch.end();
-
-	}
-	private void draw( Texture texture, int x, int y ) {
-		batch.draw( texture, x, y, camera.blockSize, camera.blockSize );
 	}
 }
