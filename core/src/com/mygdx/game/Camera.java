@@ -1,13 +1,18 @@
 package com.mygdx.game;
 
 public class Camera {
+
 	public SlidePos posIdle, posMovement;
 	public Pos endPos, pos;
 	private Slide zoom;
 	public int blockSize;
 	private int screenW, screenH;
 	private boolean playerMovedLastTick;
+	private SlidePos cameraShock;
+
+
 	public Camera( int screenW, int screenH ) {
+		this.cameraShock = new SlidePos( 0, 0, 100 );
 		posIdle = new SlidePos( 0, 0 ,800);
 		posMovement = new SlidePos( 0, 0 ,200);
 		posIdle.setEasing("ease-out");
@@ -23,6 +28,7 @@ public class Camera {
 	public void update() {
 		this.posMovement.calc();
 		this.posIdle.calc();
+		this.cameraShock.calc();
 		if (playerMovedLastTick) {
 			playerMovedLastTick = false;
 			this.pos.x = this.posMovement.x;
@@ -34,15 +40,22 @@ public class Camera {
 			this.pos.y = this.posIdle.y;
 		}
 		this.blockSize = this.zoom.getPoint();
+		this.pos.x += this.cameraShock.x;
+		this.pos.y += this.cameraShock.y;
 		this.endPos.x = this.pos.x + this.screenW + this.blockSize;
 		this.endPos.y = this.pos.y + this.screenH + this.blockSize;
+	}
+
+	public void shock() {
+		this.cameraShock.setStart( -30, -30 );
+		this.cameraShock.setPos( 0, 0 );
 	}
 
 	public void setZoom(int zoom) {
 		this.zoom.setEnd(zoom);
 	}
 
-	public void setPos(int x, int y) {
+	public void setPos( int x, int y ) {
 		this.posIdle.setPos( x, y );
 		this.posMovement.setPos( x, y );
 		this.posMovement.setStart( this.posIdle.x, this.posIdle.y);

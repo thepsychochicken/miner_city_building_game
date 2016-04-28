@@ -190,6 +190,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			seed--;
 			world.setSeed(seed);
 			world.reloadMap();
+			camera.shock();
 			leftArrowLast = true;
 		}
 		else if ( !Gdx.input.isKeyPressed(Input.Keys.LEFT) ){
@@ -201,6 +202,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			seed++;
 			world.setSeed(seed);
 			world.reloadMap();
+			camera.shock();
 			rightArrowLast = true;
 		}
 		else if ( !Gdx.input.isKeyPressed(Input.Keys.RIGHT) ){
