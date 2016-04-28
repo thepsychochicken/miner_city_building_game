@@ -22,7 +22,7 @@ import java.util.Date;
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	int frameCount = 0;
-	Texture stone, dirt, iron_ore, grass, selection;
+	Texture stone, dirt, iron_ore, grass, selection, personT;
 	int blockSize;
 	Pos mouse, mapMouse;
 	boolean mouseLeft, mouseRight;
@@ -95,6 +95,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		iron_ore = new Texture("iron-ore.png");
 		grass = new Texture("grass.png");
 		selection = new Texture("selection.png");
+		personT = new Texture("person-placeholder.png");
 		
 		zoom = 80;
 		world = new int[ 16 * 10 ][ 16 * 10 ][2];
@@ -175,6 +176,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				}
 			}
 		}
+		batch.draw( personT, ( int )( player.pos.x * camera.blockSize ) - camera.pos.x, ( int )( player.pos.y * camera.blockSize ) - camera.pos.y, ( int )( camera.blockSize * 2.5f ), ( int )( camera.blockSize * 5f ) );
 		batch.end();
 
 	}
