@@ -45,7 +45,7 @@ public class Camera {
 	public void setPos(int x, int y) {
 		this.posIdle.setPos( x, y );
 		this.posMovement.setPos( x, y );
-		//this.posMovement.setStart( this.pos.x, this.pos.y );
+		this.posMovement.setStart( this.posIdle.x, this.posIdle.y);
 		playerMovedLastTick = true;
 	}
 }
