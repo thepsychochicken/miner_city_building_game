@@ -97,7 +97,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		selection = new Texture("selection.png");
 		personT = new Texture("person-placeholder.png");
 		
-		zoom = 80;
+		zoom = 30;
 		world = new int[ 16 * 10 ][ 16 * 10 ][2];
 		mapgen = new MapGenerator[2];
 
@@ -129,8 +129,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Just call render functions in different classes in the right order of course. Maybe add a "loop" function in all classes too or something
 		// Put events, movement and such into a function, to make it more clear what render is doing
 		
-		HandleInput(input);
 		player.calc(timePassed); // Movement and such, pretty much all actions
+		HandleInput(input);
 		camera.update();
 		
 
@@ -148,7 +148,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		batch.begin();
 		
-		System.out.println("Plater pos: " + player.pos.x + ", " + player.pos.y);
+		//System.out.println("Player pos: " + player.pos.x + ", " + player.pos.y);
 
 		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x += camera.blockSize ) {
 			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y += camera.blockSize ) { // Loops through all blocks in sight by screenposition
@@ -214,7 +214,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			//System.out.println("MOUSE WAS SCROLLED");
 			zoom -= input.deltaY*5;
 			if (zoom < 15) {zoom = 15;}
-			else if (zoom > 300) {zoom = 300;}
+			else if (zoom > 50) {zoom = 50;}
 			camera.setZoom(zoom);
 			input.deltaY = 0;
 		}
@@ -323,8 +323,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		if ( player.lastPos.x != player.pos.x || player.lastPos.y != player.pos.y ) { // Make a "player.isMoving() function"
 			camera.setPos( 
-				( int )( ( player.pos.x * camera.blockSize ) - ( screenW / 2 ) ) -  camera.blockSize,
-			 	( int )( ( player.pos.y * camera.blockSize ) - ( screenH / 2 ) ) -  camera.blockSize
+				( int )( ( player.pos.x * camera.blockSize ) - ( screenW / 2 ) ),
+			 	( int )( ( player.pos.y * camera.blockSize ) - ( screenH / 2 ) )
 			);
 		}
 
