@@ -4,6 +4,7 @@ import com.badlogic.gdx.InputProcessor;
 
 public class MyInput implements InputProcessor {
 
+	public String typedInput = "";
 	public int deltaY = 0;
 
 	public boolean mouseMoved(int mouseX, int mouseY) {
@@ -22,7 +23,14 @@ public class MyInput implements InputProcessor {
 		return false;
 	}
 
+	public void clear() {
+		typedInput = "";
+		deltaY = 0;
+	}
+
 	public boolean keyTyped(char key) {
+		//System.out.println("Key typed: " + key);
+		typedInput = typedInput + key;
 		return false;
 	}
 

@@ -24,8 +24,7 @@ public class Person {
 		// Middle
 
 		if (this.dirUp) { 
-			this.pos.y += this.speed * timePassed; 
-			System.out.println("Player goes up");
+			this.pos.y += this.speed * timePassed;
 		}
 		if (this.dirDown) {
 			this.pos.y -= this.speed * timePassed;

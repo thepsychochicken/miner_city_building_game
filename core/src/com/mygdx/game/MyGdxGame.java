@@ -327,6 +327,11 @@ public class MyGdxGame extends ApplicationAdapter {
 			 	( int )( ( player.pos.y * camera.blockSize ) - ( screenH / 2 ) )
 			);
 		}
+		
+		if (input.typedInput != "") {
+			System.out.println(input.typedInput);
+		}
 
+		input.clear();
 	}
 }

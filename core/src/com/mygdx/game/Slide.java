@@ -39,6 +39,8 @@ public class Slide {
 		}
 	}
 
+
+
 	public void init(int start, int end, int time) {
 		this.start = start;
 		this.end = end;
