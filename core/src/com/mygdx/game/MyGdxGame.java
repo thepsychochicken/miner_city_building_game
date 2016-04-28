@@ -25,7 +25,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture stone, dirt, iron_ore, grass, selection;
 	int blockSize;
 	Pos mouse, mapMouse;
-	boolean dirLeft,dirRight,dirDown,dirUp,mouseLeft, mouseRight;
+	boolean mouseLeft, mouseRight;
 	int screenW, screenH;
 	MapGenerator[] mapgen;
 	int[] mapgenLayers = {1,3};
@@ -82,10 +82,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		blockSize = 50;
 		mouseLeft = false;
 		mouseRight = false;
-		dirLeft = false;
-		dirRight = false;
-		dirDown = false;
-		dirUp = false;
 		screenW = 1600;
 		screenH = 900;
 		leftArrowLast = false;
@@ -124,20 +120,18 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void render () {
 		nowTime = System.currentTimeMillis();
-		timePassed = (double)( lastTime - nowTime ) / 1000;
+		timePassed = (double)( nowTime - lastTime ) / 1000;
 		lastTime = nowTime;
-		System.out.println("Time passed: " + timePassed);
+		//System.out.println("Time passed: " + timePassed);
 
 		// If possible, make render just call player.render(), camera.render(), person.render() and so on.
 		// Just call render functions in different classes in the right order of course. Maybe add a "loop" function in all classes too or something
-		HandleInput(input);
-
-		//System.out.println("Got to frame " + frameCount);
-
 		// Put events, movement and such into a function, to make it more clear what render is doing
 		
-		player.calc(); // Calc what?
+		HandleInput(input);
+		player.calc(timePassed); // Movement and such, pretty much all actions
 		camera.update();
+		
 
 		// Rendering
 		//System.out.println("Camera size is: " + ( camera.endPos.x - camera.pos.x ) + ", " + ( camera.endPos.y - camera.pos.y ));
@@ -153,6 +147,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		batch.begin();
 		
+		System.out.println("Plater pos: " + player.pos.x + ", " + player.pos.y);
+
 		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x += camera.blockSize ) {
 			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y += camera.blockSize ) { // Loops through all blocks in sight by screenposition
 				mapPos.x = ( int )( x / camera.blockSize ); // Calculates block position in grid (wutthafuck?)
@@ -167,6 +163,7 @@ public class MyGdxGame extends ApplicationAdapter {
 						//System.out.println("Rendering block at: " + ( x - camera.pos.x ) + ", " + ( y - camera.pos.y ));
 						//System.out.println("Drawing tile at: " + drawPos.x + ", " + drawPos.y);
 						
+
 
 						// This switch could be a function like "DrawTile(int type, int x, int y)"
 						drawTile(drawPos, world[ mapPos.x ][ mapPos.y ][ 0 ]);
@@ -276,34 +273,34 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Movement settings
 		if ( Gdx.input.isKeyPressed(Input.Keys.A) ) {
 			//System.out.print("Left was pressed\n");
-			dirLeft = true;
+			player.dirLeft = true;
 		}
 		else {
-			dirLeft = false;
+			player.dirLeft = false;
 		}
 
 		if ( Gdx.input.isKeyPressed(Input.Keys.D) ) {
 			//System.out.println("Right was pressed");
-			dirRight = true;
+			player.dirRight = true;
 		}
 		else {
-			dirRight = false;
+			player.dirRight = false;
 		}
 
 		if ( Gdx.input.isKeyPressed(Input.Keys.W) ) {
 			//System.out.println("Up was pressed");
-			dirUp = true;
+			player.dirUp = true;
 		}
 		else {
-			dirUp = false;
+			player.dirUp = false;
 		}
 
 		if ( Gdx.input.isKeyPressed(Input.Keys.S) ) {
 			//System.out.println("Down was pressed");
-			dirDown = true;
+			player.dirDown = true;
 		}
 		else {
-			dirDown = false;
+			player.dirDown = false;
 		}
 
 		if ( Gdx.input.isButtonPressed(Input.Buttons.LEFT) ) {
@@ -321,23 +318,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		else {
 			mouseRight = false;
 		}
-
-		// Movement
-
-		if (dirLeft) {
-			player.pos.x += player.speed * timePassed;
-		}
-		if (dirRight) {
-			player.pos.x -= player.speed * timePassed;
-		}
-		if (dirUp) {
-			player.pos.y -= player.speed * timePassed;
-		}
-		if (dirDown) {
-			player.pos.y += player.speed * timePassed;
-		}
-
-
 
 		if ( player.lastPos.x != player.pos.x || player.lastPos.y != player.pos.y ) { // Make a "player.isMoving() function"
 			camera.setPos( 
