@@ -244,16 +244,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Movement
 
 		if (dirLeft) {
-			player.pos.x += 3 * timePassed; // Make 3 a variable, to make it easier to adjust
+			player.pos.x += player.speed * timePassed;
 		}
 		if (dirRight) {
-			player.pos.x -= 3 * timePassed;
+			player.pos.x -= player.speed * timePassed;
 		}
 		if (dirUp) {
-			player.pos.y -= 3 * timePassed;
+			player.pos.y -= player.speed * timePassed;
 		}
 		if (dirDown) {
-			player.pos.y += 3 * timePassed;
+			player.pos.y += player.speed * timePassed;
 		}
 
 
