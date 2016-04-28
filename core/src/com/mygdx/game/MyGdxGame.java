@@ -108,12 +108,20 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+<<<<<<< HEAD
 		nowTime = System.currentTimeMillis();
 		timePassed = (double)( lastTime - nowTime ) / 1000;
 		lastTime = nowTime;
 		System.out.println("Time passed: " + timePassed);
+=======
+		// If possible, make render just call player.render(), camera.render(), person.render() and so on.
+		// Just call render functions in different classes in the right order of course. Maybe add a "loop" function in all classes too or something
+>>>>>>> b2376d7f8831eda9727d546d4cf0d711647fcd53
 		frameCount++;
 		//System.out.println("Got to frame " + frameCount);
+
+		// Put events, movement and such into a function, to make it more clear what render is doing
+		
 		// Events
 		if (mouse.x != Gdx.input.getX()) {
 			mouse.x = Gdx.input.getX();
@@ -237,7 +245,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Movement
 
 		if (dirLeft) {
+<<<<<<< HEAD
 			player.pos.x += 3 * timePassed;
+=======
+			player.pos.x -= 0.25d; // Make 0.25d a variable, to make it easier to adjust
+>>>>>>> b2376d7f8831eda9727d546d4cf0d711647fcd53
 		}
 		if (dirRight) {
 			player.pos.x -= 3 * timePassed;
@@ -251,13 +263,14 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 
-		if ( player.lastPos.x != player.pos.x || player.lastPos.y != player.pos.y ) {
+		if ( player.lastPos.x != player.pos.x || player.lastPos.y != player.pos.y ) { // Make a "player.isMoving() function"
 			camera.setPos( 
 				( int )( ( player.pos.x * camera.blockSize ) - ( screenW / 2 ) ) -  camera.blockSize,
 			 	( int )( ( player.pos.y * camera.blockSize ) - ( screenH / 2 ) ) -  camera.blockSize
 			);
 		}
-		player.calc();
+
+		player.calc(); // Calc what?
 		camera.update();
 
 		// Rendering
@@ -265,26 +278,36 @@ public class MyGdxGame extends ApplicationAdapter {
 		//System.out.println("Camera is at: " + camera.pos.x + ", " + camera.pos.y );
 		Gdx.gl.glClearColor( ( float ) 0.2, ( float ) 0.5, ( float ) 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		int subtractDrawX = camera.pos.x - ( ( ( int )( camera.pos.x / camera.blockSize ) * camera.blockSize ) - camera.pos.x );
+
+		int subtractDrawX = camera.pos.x - ( ( ( int )( camera.pos.x / camera.blockSize ) * camera.blockSize ) - camera.pos.x ); // I have no idea what this is
 		int subtractDrawY = camera.pos.y - ( ( ( int )( camera.pos.y / camera.blockSize ) * camera.blockSize ) - camera.pos.y );
+<<<<<<< HEAD
 
 		mapMouse.x = (int)( ( camera.pos.x + mouse.x ) / camera.blockSize);
 		mapMouse.y = (int)( ( camera.pos.y + mouse.y ) / camera.blockSize);
 
+=======
+		
+>>>>>>> b2376d7f8831eda9727d546d4cf0d711647fcd53
 		batch.begin();
+		
 		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x += camera.blockSize ) {
-			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y += camera.blockSize ) {
-				mapPos.x = ( int )( x / camera.blockSize );
+			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y += camera.blockSize ) { // Loops through all blocks in sight by screenposition
+				mapPos.x = ( int )( x / camera.blockSize ); // Calculates block position in grid (wutthafuck?)
 				mapPos.y = ( int )( y / camera.blockSize );
-				if ( mapPos.y > 0 && mapPos.x > 0 && mapPos.x < world.length ) {
+				if ( mapPos.y > 0 && mapPos.x > 0 && mapPos.x < world.length ) { // Why not check for mappos here too?
 					if ( mapPos.y < world[mapPos.x].length ) {
 						drawPos.x = x - subtractDrawX;
 						drawPos.y = y - subtractDrawY;
+						
 						//drawPos.x = x - camera.pos.x;
 						//drawPos.y = y - camera.pos.y;
 						//System.out.println("Rendering block at: " + ( x - camera.pos.x ) + ", " + ( y - camera.pos.y ));
 						//System.out.println("Drawing tile at: " + drawPos.x + ", " + drawPos.y);
-						switch( world[ mapPos.x ][ mapPos.y ][ 0 ] ) {
+						
+
+						// This switch could be a function like "DrawTile(int type, int x, int y)"
+						switch( world[ mapPos.x ][ mapPos.y ][ 0 ] ) { // Checks which texture to draw without using a enum apparently :P
 							case 1:
 								draw( dirt, drawPos.x, drawPos.y );
 								break;
@@ -295,7 +318,7 @@ public class MyGdxGame extends ApplicationAdapter {
 								draw( stone, drawPos.x, drawPos.y );
 								break;
 						}
-						if (mapPos.x == mapMouse.x && mapPos.y == mapMouse.y) {
+						if (mapPos.x == mapMouse.x && mapPos.y == mapMouse.y) { // And if the mouse is here, draw a "selected" box thingy around
 							draw( selection, drawPos.x, drawPos.y );
 						}
 					}
