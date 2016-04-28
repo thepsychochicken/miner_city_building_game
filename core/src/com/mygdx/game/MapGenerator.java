@@ -34,27 +34,31 @@ public class MapGenerator {
 			}
 		}
 		if (allowOre) {
+			int[] oreQuadSizes = { 1, 2, 4, 8 };
 			float[][] percent = new float[3][3];
 			// 0 for air, to make caves, input if not anything else
 			int[] oreToGet = { input, 0, 3 };
 			int[] oreStartingLevel = { 0, 30, 20 };
 			int[] oreChance = { 2000, 300, 50 };
-
+			//int combinedOreChance = 0;
+			//for (int i = 0; i < oreQuadSizes; i++) {}
 			rand.setSeed(x * 321321 + y *557444 + seed);
+			
 		}
 		return input;
 	}
 
 	public int generateHeight(int x) {
-		return smooth(x, 200);
+		return smooth(x, 20);
 	}
 
 	private int smooth( int x, int amp ) {
-		int adder = getNoise(x) * amp;
-		int divider = amp;
+		int multiplier = 10;
+		int adder = getNoise(x) * 2 ;
+		int divider = 2;
 		for (int i = 1; i < amp; i++) {
-			adder += (getNoise(x+i) + getNoise(x-i)) * ( amp / i );
-			divider += ( amp * 2 ) / i;
+			adder += (getNoise(x+i) + getNoise(x-i)) * ( ( amp * multiplier ) - ( i * ( int )( multiplier / 4 ) ) );
+			divider += ( ( amp * multiplier ) * (2) ) - ( i * ( int )( multiplier / 4 ) );
 		}
 		return (int)( ( ( adder / divider ) ) ) + 30;
 	}
