@@ -1,0 +1,4 @@
+Things we need to do:
+	Fix ore generation - Cliff
+	Drawing a placeholder for the player on the screen
+	getting physics in place for all of class 'Person'

@@ -99,6 +99,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		screenW = Gdx.graphics.getWidth();
 		screenH = Gdx.graphics.getHeight();
 		camera = new Camera( screenW, screenH );
+		reloadMap();
 	}
 
 	@Override
