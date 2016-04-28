@@ -137,7 +137,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Rendering
 		//System.out.println("Camera size is: " + ( camera.endPos.x - camera.pos.x ) + ", " + ( camera.endPos.y - camera.pos.y ));
 		//System.out.println("Camera is at: " + camera.pos.x + ", " + camera.pos.y );
-		Gdx.gl.glClearColor( ( float ) 0.2, ( float ) 0.5, ( float ) 1, 1);
+		Gdx.gl.glClearColor( 0.2f, 0.5f, 1f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		int subtractDrawX = camera.pos.x - ( ( ( int )( camera.pos.x / camera.blockSize ) * camera.blockSize ) - camera.pos.x ); // I have no idea what this is
