@@ -27,16 +27,15 @@ public class MyGdxGame extends ApplicationAdapter {
 	Pos mouse, mapMouse;
 	boolean mouseLeft, mouseRight;
 	int screenW, screenH;
-	MapGenerator[] mapgen;
-	int[] mapgenLayers = {1,3};
 	int seed = 3213213;
 	int heightAmp = 30;
 	boolean leftArrowLast, rightArrowLast, downArrowLast, upArrowLast;
-	int[][][] world; // x = x pos, y = y pos, z1 = block type, z2 = link to object
 	int zoom;
 	Camera camera;
 	MyInput input;
 	Person player = new Person();
+
+	World world;
 
 	Pos mapPos = new Pos( 0, 0 );
 	Pos drawPos = new Pos( 0, 0 );
@@ -44,35 +43,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	long nowTime, lastTime;
 	double timePassed;
 
-	private int getBlockAt( int x, int y ) {
-		int blockType = 0;
-		int minInt = 1000;
-		for (int j = 0; j < mapgen.length; j++) {
-			if (y <= mapgen[j].generateHeight(x) && y <= minInt) {
-				blockType = mapgenLayers[j];
-				minInt = mapgen[j].generateHeight(x)-3;
-			}
-			else {
-				break;
-			}
-		}
-		return blockType;
-	}
-
-	private void reloadMap() {
-		int blockType;
-		for (int x = 0; x < world.length; x++ ) {
-			for (int y = 0; y < world[x].length; y++ ) {
-				blockType = getBlockAt( x, y );
-				if (blockType == TILE.DIRT && getBlockAt( x, y + 1 ) == TILE.AIR)  {
-					blockType = TILE.GRASS;
-				}
-				blockType = mapgen[ 0 ].generateOre( blockType, x, y );
-				world[x][y][0] = blockType;
-				world[x][y][1] = 0;
-			}
-		}
-	}
 	@Override
 	public void create () {
 		input = new MyInput();
@@ -99,24 +69,19 @@ public class MyGdxGame extends ApplicationAdapter {
 		personT = new Texture("person-placeholder.png");
 		
 		zoom = 30;
-		world = new int[ 16 * 10 ][ 16 * 10 ][2];
-		mapgen = new MapGenerator[2];
 
 		System.out.println("Test");
 		
-		for ( int i = 0; i < mapgen.length; i++ ) {
-			mapgen[i] = new MapGenerator();
-			mapgen[i].setSeed( seed + 512 );
-			mapgen[i].setHeightAmp(heightAmp);
-		}
 		
 		//resize(screenW, screenH); // LibGDX will call this by itself after create()
 		
 		screenW = Gdx.graphics.getWidth();
 		screenH = Gdx.graphics.getHeight();
 		camera = new Camera( screenW, screenH );
-		reloadMap();
 		lastTime = System.currentTimeMillis();
+
+		world = new World( "A world", seed );
+		world.reloadMap();
 	}
 
 	@Override
@@ -150,31 +115,27 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.begin();
 		
 		//System.out.println("Player pos: " + player.pos.x + ", " + player.pos.y);
-
+		int blockType = 0;
 		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x += camera.blockSize ) {
 			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y += camera.blockSize ) { // Loops through all blocks in sight by screenposition
 				mapPos.x = ( int )( x / camera.blockSize ); // Calculates block position in grid (wutthafuck?)
 				mapPos.y = ( int )( y / camera.blockSize );
-				if ( mapPos.y > 0 && mapPos.x > 0 && mapPos.x < world.length ) { // Why not check for mappos here too?
-					if ( mapPos.y < world[mapPos.x].length ) {
-						drawPos.x = x - subtractDrawX;
-						drawPos.y = y - subtractDrawY;
-						
-						//drawPos.x = x - camera.pos.x;
-						//drawPos.y = y - camera.pos.y;
-						//System.out.println("Rendering block at: " + ( x - camera.pos.x ) + ", " + ( y - camera.pos.y ));
-						//System.out.println("Drawing tile at: " + drawPos.x + ", " + drawPos.y);
-						
+				//if ( mapPos.y > 0 && mapPos.x > 0 && mapPos.x < world.length ) { // Why not check for mappos here too?
+					//if ( mapPos.y < world[mapPos.x].length ) {
+						blockType = world.getTypeAt( mapPos.x, mapPos.y );
+						if ( blockType != -1 ) {
 
+							drawPos.x = x - subtractDrawX;
+							drawPos.y = y - subtractDrawY;
+							
+							drawTile(drawPos, blockType);
 
-						// This switch could be a function like "DrawTile(int type, int x, int y)"
-						drawTile(drawPos, world[ mapPos.x ][ mapPos.y ][ 0 ]);
-
-						if (mapPos.x == mapMouse.x && mapPos.y == mapMouse.y) { // And if the mouse is here, draw a "selected" box thingy around
-							draw( selection, drawPos.x, drawPos.y );
+							if (mapPos.x == mapMouse.x && mapPos.y == mapMouse.y) { // And if the mouse is here, draw a "selected" box thingy around
+								draw( selection, drawPos.x, drawPos.y );
+							}
 						}
-					}
-				}
+					//}
+				//}
 			}
 		}
 		batch.draw( personT, ( int )( player.pos.x * camera.blockSize ) - camera.pos.x, ( int )( player.pos.y * camera.blockSize ) - camera.pos.y, ( int )( camera.blockSize * 2.5f ), ( int )( camera.blockSize * 5f ) );
@@ -194,7 +155,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				draw( stone, drawPos.x, drawPos.y );
 				break;
 			case TILE.IRON_ORE: // 4
-				//draw( iron_ore, drawPos.x, drawPos.y );
+				draw( iron_ore, drawPos.x, drawPos.y );
 				break;
 		}
 	}
@@ -227,10 +188,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		if ( Gdx.input.isKeyPressed(Input.Keys.LEFT) && !leftArrowLast ) {
 			System.out.println("Changed seed to more");
 			seed--;
-			for (int i = 0; i < mapgen.length; i++) {
-				mapgen[i].setSeed(seed+i);
-			}
-			reloadMap();
+			world.setSeed(seed);
+			world.reloadMap();
 			leftArrowLast = true;
 		}
 		else if ( !Gdx.input.isKeyPressed(Input.Keys.LEFT) ){
@@ -240,10 +199,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		if ( Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !rightArrowLast ) {
 			System.out.println("Changed seed to less");
 			seed++;
-			for (int i = 0; i < mapgen.length; i++) {
-				mapgen[i].setSeed(seed+i);
-			}
-			reloadMap();
+			world.setSeed(seed);
+			world.reloadMap();
 			rightArrowLast = true;
 		}
 		else if ( !Gdx.input.isKeyPressed(Input.Keys.RIGHT) ){
@@ -253,10 +210,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		if ( Gdx.input.isKeyPressed(Input.Keys.UP)/* && !upArrowLast */) {
 			System.out.println("Changed height amplifier to more");
 			heightAmp++;
-			for (int i = 0; i < mapgen.length; i++) {
-				mapgen[i].setHeightAmp(heightAmp);
-			}
-			reloadMap();
+			world.setHeightAmp(heightAmp);
+			world.reloadMap();
 			upArrowLast = true;
 		}
 		else if ( !Gdx.input.isKeyPressed(Input.Keys.UP) ){
@@ -266,10 +221,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		if ( Gdx.input.isKeyPressed(Input.Keys.DOWN)/* && !downArrowLast */) {
 			System.out.println("Changed height amplifier to less");
 			heightAmp--;
-			for (int i = 0; i < mapgen.length; i++) {
-				mapgen[i].setHeightAmp(heightAmp);
-			}
-			reloadMap();
+			world.setHeightAmp(heightAmp);
+			world.reloadMap();
 			downArrowLast = true;
 		}
 		else if ( !Gdx.input.isKeyPressed(Input.Keys.DOWN) ){
@@ -333,7 +286,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 
 		if (input.typedInput != "") {
-			System.out.println(input.typedInput);
 		}
 
 		input.clear();

@@ -33,7 +33,7 @@ public class MapGenerator {
 			}
 		}
 		if (allowOre) {
-			int clusterSizes = 16;
+			int clusterSizes = 8;
 			float[][] percent = new float[3][3];
 			// 0 for air, to make caves, input if not anything else
 			int[] oreToGet = { input, TILE.IRON_ORE };
@@ -90,6 +90,29 @@ public class MapGenerator {
 			divider += ( ( amp * multiplier ) * (2) ) - ( i * ( int )( multiplier / 4 ) );
 		}
 		return (int)( ( ( adder / divider ) ) ) + 30;
+
+
+		// Work in progress 'Cosine interpolator'
+		
+		/*int curveSize = 16;
+		int thisChunk = ( int )( ( float ) x / curveSize );
+		//System.out.println(thisChunk);
+		int thisChunkX = (int)( ( ( ( float )( ( float )getNoise( thisChunk ) / heightAmp ) + 1) / 2) * curveSize );
+		int thisHeight = getNoise( x );
+		if (x ==  thisChunkX + ( thisChunk * curveSize ) ) {
+			return thisHeight + 40;
+		}
+		else if (x < thisChunkX + ( thisChunk * curveSize ) ) {
+			int otherChunkX = (int)( ( ( ( float )( ( float )getNoise( thisChunk - 1 ) / heightAmp ) + 1) / 2) * curveSize );
+			int dif = ( thisChunkX + ( thisChunk * curveSize ) ) - ( otherChunkX + ( thisChunk * curveSize ) );
+			int otherHeight = getNoise( otherChunkX );
+			float percent = ( (float)x - thisChunk * curveSize ) / dif;
+			percent = 1f - ( ( float )( Math.cos( percent * Math.PI ) + 1 ) / 2 );
+			//System.out.println(percent);
+			dif = otherHeight - thisHeight;
+			return otherHeight + ( int )( percent * dif ) + 40;
+		}
+		return 40;*/
 	}
 
 	private int getNoise(int x) {
