@@ -108,16 +108,15 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-<<<<<<< HEAD
 		nowTime = System.currentTimeMillis();
 		timePassed = (double)( lastTime - nowTime ) / 1000;
 		lastTime = nowTime;
 		System.out.println("Time passed: " + timePassed);
-=======
+
 		// If possible, make render just call player.render(), camera.render(), person.render() and so on.
 		// Just call render functions in different classes in the right order of course. Maybe add a "loop" function in all classes too or something
->>>>>>> b2376d7f8831eda9727d546d4cf0d711647fcd53
-		frameCount++;
+
+
 		//System.out.println("Got to frame " + frameCount);
 
 		// Put events, movement and such into a function, to make it more clear what render is doing
@@ -245,11 +244,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Movement
 
 		if (dirLeft) {
-<<<<<<< HEAD
-			player.pos.x += 3 * timePassed;
-=======
-			player.pos.x -= 0.25d; // Make 0.25d a variable, to make it easier to adjust
->>>>>>> b2376d7f8831eda9727d546d4cf0d711647fcd53
+			player.pos.x += 3 * timePassed; // Make 3 a variable, to make it easier to adjust
 		}
 		if (dirRight) {
 			player.pos.x -= 3 * timePassed;
@@ -281,14 +276,10 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		int subtractDrawX = camera.pos.x - ( ( ( int )( camera.pos.x / camera.blockSize ) * camera.blockSize ) - camera.pos.x ); // I have no idea what this is
 		int subtractDrawY = camera.pos.y - ( ( ( int )( camera.pos.y / camera.blockSize ) * camera.blockSize ) - camera.pos.y );
-<<<<<<< HEAD
 
 		mapMouse.x = (int)( ( camera.pos.x + mouse.x ) / camera.blockSize);
 		mapMouse.y = (int)( ( camera.pos.y + mouse.y ) / camera.blockSize);
 
-=======
-		
->>>>>>> b2376d7f8831eda9727d546d4cf0d711647fcd53
 		batch.begin();
 		
 		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x += camera.blockSize ) {
