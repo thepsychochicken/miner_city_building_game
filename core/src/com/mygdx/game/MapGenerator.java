@@ -24,8 +24,7 @@ public class MapGenerator {
 	}
 
 	public int generateOre(int input, int x , int y ) {
-		Random rand = new Random();
-		int[] blocksAllowingOre = { 2 };
+		int[] blocksAllowingOre = { TILE.STONE };
 		boolean allowOre = false;
 		for (int i = 0; i < blocksAllowingOre.length; i++) {
 			if (input == blocksAllowingOre[i]) {
@@ -34,22 +33,52 @@ public class MapGenerator {
 			}
 		}
 		if (allowOre) {
-			int[] oreQuadSizes = { 1, 2, 4, 8 };
+			int clusterSizes = 16;
 			float[][] percent = new float[3][3];
 			// 0 for air, to make caves, input if not anything else
-			int[] oreToGet = { input, 0, 3 };
-			int[] oreStartingLevel = { 0, 30, 20 };
-			int[] oreChance = { 2000, 300, 50 };
-			//int combinedOreChance = 0;
-			//for (int i = 0; i < oreQuadSizes; i++) {}
-			rand.setSeed(x * 321321 + y *557444 + seed);
+			int[] oreToGet = { input, TILE.IRON_ORE };
+			int[] oreStartingLevel = { 0, 20 };
+			int[] oreChance = { 300, 100 };
+			rand.setSeed(this.seed);
+			int oreSeed = rand.nextInt(100000);
+
+			int combinedOreChance = 0;
+			for ( int i = 0; i < oreChance.length; i++ ) {
+				combinedOreChance += oreChance[ i ];
+			}
+
+			int spawnOre;
+
+			int[] oreArray = new int[ oreToGet.length ];
+			for ( int i = 0; i < oreArray.length; i++ ) {
+				oreArray[ i ] = 0;
+			}
+
+			// List the ores in array (put ore in clusters)
+			for ( int i = 0; i < oreToGet.length; i++ ) {
+				for ( int j = clusterSizes; j > 0; j /= 2 ) {
+					rand.setSeed( ( int )( x / j ) * 3241 + ( int )( y / j ) * 6578 + i * 21144 + oreSeed);
+					spawnOre = rand.nextInt(combinedOreChance);
+					if ( spawnOre <= oreChance[ i ] ) {
+						oreArray[ i ]++;
+					}
+				}
+			}
+
+			// Find out what ore to use
+			for ( int i = oreToGet.length-1; i >= 0 ; i-- ) {
+				if ( oreArray[ i ] > 3 ) {
+					input = oreToGet[ i ];
+					break;
+				}
+			}
 			
 		}
 		return input;
 	}
 
 	public int generateHeight(int x) {
-		return smooth(x, 20);
+		return smooth( x, 20);
 	}
 
 	private int smooth( int x, int amp ) {

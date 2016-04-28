@@ -67,6 +67,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				if (blockType == TILE.DIRT && getBlockAt( x, y + 1 ) == TILE.AIR)  {
 					blockType = TILE.GRASS;
 				}
+				blockType = mapgen[ 0 ].generateOre( blockType, x, y );
 				world[x][y][0] = blockType;
 				world[x][y][1] = 0;
 			}
@@ -191,6 +192,9 @@ public class MyGdxGame extends ApplicationAdapter {
 				break;
 			case TILE.STONE: // 3
 				draw( stone, drawPos.x, drawPos.y );
+				break;
+			case TILE.IRON_ORE: // 4
+				//draw( iron_ore, drawPos.x, drawPos.y );
 				break;
 		}
 	}
@@ -327,7 +331,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			 	( int )( ( player.pos.y * camera.blockSize ) - ( screenH / 2 ) )
 			);
 		}
-		
+
 		if (input.typedInput != "") {
 			System.out.println(input.typedInput);
 		}
