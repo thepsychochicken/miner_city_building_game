@@ -7,7 +7,6 @@ public class MyInput implements InputProcessor {
 	public int deltaY = 0;
 
 	public boolean mouseMoved(int mouseX, int mouseY) {
-		System.out.println("mouseMoved");
 		return false;
 	}
 
@@ -24,22 +23,18 @@ public class MyInput implements InputProcessor {
 	}
 
 	public boolean keyTyped(char key) {
-		System.out.println("Keytyped: " + key);
 		return false;
 	}
 
 	public boolean keyUp(int key) {
-		System.out.println("Keyup: " + key);
 		return false;
 	}
 
 	public boolean keyDown(int key) {
-		System.out.println("Keydown: " + key);
 		return false;
 	}
 
 	public boolean scrolled(int amount) {
-		System.out.println("Scrolled " + amount);
 		this.deltaY += amount; 
 		return false;
 	}
