@@ -1,3 +1,11 @@
+/*
+
+Naming convention:
+Variables, functions and objects are camelCase
+Class-definitions are PascalCase
+
+*/
+
 package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -175,7 +183,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	private void drawTile(Pos drawPos, int type) {
-		switch( type ) { // Checks which texture to draw without using a enum apparently :P
+		switch( type ) {
 			case TILE.DIRT: // 1
 				draw( dirt, drawPos.x, drawPos.y );
 				break;
