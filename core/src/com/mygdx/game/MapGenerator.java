@@ -23,9 +23,9 @@ public class MapGenerator {
 		}
 	}
 
-	public int generateOre(int input, int x , int y) {
+	public int generateOre(int input, int x , int y ) {
 		Random rand = new Random();
-		int[] blocksAllowingOre = {2};
+		int[] blocksAllowingOre = { 2 };
 		boolean allowOre = false;
 		for (int i = 0; i < blocksAllowingOre.length; i++) {
 			if (input == blocksAllowingOre[i]) {
@@ -35,22 +35,12 @@ public class MapGenerator {
 		}
 		if (allowOre) {
 			float[][] percent = new float[3][3];
-			// 0 for air, to make caves
-			int[] oreToGet = { 0, 3 };
-			int[] oreStartingLevel = { 30, 20 };
-			int[] oreChance = { 300, 50 };
-			int uX = 0;
-			int uY = 0;
-			for (int arrX = x-1; arrX <= x+1; arrX++ ) {
-				uY = 0;
-				for (int arrY = y-1; arrY <= y+1; arrY++ ) {
-					percent[uX][uY] = (float)rand.nextInt(100000)/100000;
-					uY++;
-				}
-				uX++;
-			}
+			// 0 for air, to make caves, input if not anything else
+			int[] oreToGet = { input, 0, 3 };
+			int[] oreStartingLevel = { 0, 30, 20 };
+			int[] oreChance = { 2000, 300, 50 };
+
 			rand.setSeed(x * 321321 + y *557444 + seed);
-			
 		}
 		return input;
 	}

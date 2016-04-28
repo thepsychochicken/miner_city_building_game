@@ -9,6 +9,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import java.util.Random;
 import java.lang.*;
+import java.util.Date;
 
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
@@ -32,6 +33,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	Pos mapPos = new Pos( 0, 0 );
 	Pos drawPos = new Pos( 0, 0 );
 
+	long nowTime, lastTime;
+	double timePassed;
 
 	private int getBlockAt( int x, int y ) {
 		int blockType = 0;
@@ -100,21 +103,25 @@ public class MyGdxGame extends ApplicationAdapter {
 		screenH = Gdx.graphics.getHeight();
 		camera = new Camera( screenW, screenH );
 		reloadMap();
+		lastTime = System.currentTimeMillis();
 	}
 
 	@Override
 	public void render () {
+		nowTime = System.currentTimeMillis();
+		timePassed = (double)( lastTime - nowTime ) / 1000;
+		lastTime = nowTime;
+		System.out.println("Time passed: " + timePassed);
 		frameCount++;
 		//System.out.println("Got to frame " + frameCount);
 		// Events
 		if (mouse.x != Gdx.input.getX()) {
 			mouse.x = Gdx.input.getX();
-			mapMouse.x = (int)(mouse.x / camera.blockSize);
 		}
 		if (mouse.y != screenH - Gdx.input.getY()) {
 			mouse.y = screenH - Gdx.input.getY();
-			mapMouse.y = (int)(mouse.y / camera.blockSize);
 		}
+
 
 		if (input.deltaY != 0) {
 			//System.out.println("MOUSE WAS SCROLLED");
@@ -230,16 +237,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Movement
 
 		if (dirLeft) {
-			player.pos.x -= 0.25d;
+			player.pos.x += 3 * timePassed;
 		}
 		if (dirRight) {
-			player.pos.x += 0.25d;
+			player.pos.x -= 3 * timePassed;
 		}
 		if (dirUp) {
-			player.pos.y += 0.25d;
+			player.pos.y -= 3 * timePassed;
 		}
 		if (dirDown) {
-			player.pos.y -= 0.25d;
+			player.pos.y += 3 * timePassed;
 		}
 
 
@@ -260,6 +267,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		int subtractDrawX = camera.pos.x - ( ( ( int )( camera.pos.x / camera.blockSize ) * camera.blockSize ) - camera.pos.x );
 		int subtractDrawY = camera.pos.y - ( ( ( int )( camera.pos.y / camera.blockSize ) * camera.blockSize ) - camera.pos.y );
+
+		mapMouse.x = (int)( ( camera.pos.x + mouse.x ) / camera.blockSize);
+		mapMouse.y = (int)( ( camera.pos.y + mouse.y ) / camera.blockSize);
+
 		batch.begin();
 		for (int x = ( int ) camera.pos.x; x < camera.endPos.x; x += camera.blockSize ) {
 			for (int y = ( int ) camera.pos.y; y < camera.endPos.y; y += camera.blockSize ) {

@@ -7,7 +7,7 @@ public class Camera {
 	public int blockSize;
 	private int screenW, screenH;
 	public Camera( int screenW, int screenH ) {
-		pos = new SlidePos( 0, 0 ,300);
+		pos = new SlidePos( 0, 0 ,600);
 		this.endPos = new Pos( 0, 0 );
 		this.zoom = new Slide( 80, 80, 500 );
 		this.screenW = screenW;
