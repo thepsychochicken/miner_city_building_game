@@ -287,6 +287,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			System.out.println(input.typedInput);
 		}
 
-		//input.clear();
+		input.clear();
 	}
 }

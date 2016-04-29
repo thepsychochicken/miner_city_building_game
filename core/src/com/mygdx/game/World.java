@@ -24,12 +24,14 @@ public class World {
 			dir.mkdirs();
 		}
 		dir = new File("Saves/" + worldName + "/worldinfo.txt");
+		MyFileReader fileReader = new MyFileReader("Saves/" + worldName + "/");
 		if ( dir.exists() && dir.isFile() ) {
-			MyFileReader fileReader = new MyFileReader("Saves/" + worldName + "/worldinfo.txt");
-			System.out.println( "File contents: " + fileReader.readFile() );
+			System.out.println( "File contents: " + fileReader.readFile("worldinfo.txt") );
 		}
 		else {
-			System.out.println("File not found!");	
+			String[] info = { "world-name:" + this.worldName, "seed:" + this.seed };
+			fileReader.writeFile("worldinfo.txt", info);
+			System.out.println( "File contents: " + fileReader.readFile("worldinfo.txt") );
 		}
 
 		for ( int i = 0; i < mapgen.length; i++ ) {
