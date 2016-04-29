@@ -3,3 +3,5 @@ Things we need to do:
 	fix camera zoom and player following - Pihl
 
 	getting physics in place for all of class 'Person' - Cliff
+
+	fix cosine interpolation in MapGenerator.smooth();

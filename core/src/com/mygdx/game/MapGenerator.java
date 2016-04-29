@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import java.util.Random;
+import java.io.*;
 
 public class MapGenerator {
 	private int seed;
@@ -78,7 +79,7 @@ public class MapGenerator {
 	}
 
 	public int generateHeight(int x) {
-		return smooth( x, 20);
+		return smooth( x, 50);
 	}
 
 	private int smooth( int x, int amp ) {

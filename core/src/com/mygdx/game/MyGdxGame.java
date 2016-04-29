@@ -69,9 +69,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		personT = new Texture("person-placeholder.png");
 		
 		zoom = 30;
-
-		System.out.println("Test");
-		
 		
 		//resize(screenW, screenH); // LibGDX will call this by itself after create()
 		
@@ -95,8 +92,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Just call render functions in different classes in the right order of course. Maybe add a "loop" function in all classes too or something
 		// Put events, movement and such into a function, to make it more clear what render is doing
 		
-		player.calc(timePassed); // Movement and such, pretty much all actions
-		HandleInput(input);
+		player.calc( timePassed, world ); // Movement and such, pretty much all actions
+		HandleInput( input );
 		camera.update();
 		
 
@@ -138,7 +135,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				//}
 			}
 		}
-		batch.draw( personT, ( int )( player.pos.x * camera.blockSize ) - camera.pos.x, ( int )( player.pos.y * camera.blockSize ) - camera.pos.y, ( int )( camera.blockSize * 2.5f ), ( int )( camera.blockSize * 5f ) );
+		batch.draw( personT, ( int )( player.pos.x * camera.blockSize ) - camera.pos.x, ( int )( player.pos.y * camera.blockSize ) - camera.pos.y, ( int )( camera.blockSize * player.width ), ( int )( camera.blockSize * player.height ) );
 		batch.end();
 
 	}
@@ -181,7 +178,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (zoom < 15) {zoom = 15;}
 			else if (zoom > 50) {zoom = 50;}
 			camera.setZoom(zoom);
-			input.deltaY = 0;
 		}
 
 		// Map generator settings
@@ -280,16 +276,17 @@ public class MyGdxGame extends ApplicationAdapter {
 			mouseRight = false;
 		}
 
-		if ( player.lastPos.x != player.pos.x || player.lastPos.y != player.pos.y ) { // Make a "player.isMoving() function"
+		if ( player.isMoving() ) { // Make a "player.isMoving() function"
 			camera.setPos( 
-				( int )( ( player.pos.x * camera.blockSize ) - ( screenW / 2 ) ),
-			 	( int )( ( player.pos.y * camera.blockSize ) - ( screenH / 2 ) )
+				( int )( ( player.center.x * camera.blockSize ) - ( screenW / 2 ) ),
+			 	( int )( ( player.center.y * camera.blockSize ) - ( screenH / 2 ) )
 			);
 		}
 
 		if (input.typedInput != "") {
+			System.out.println(input.typedInput);
 		}
 
-		input.clear();
+		//input.clear();
 	}
 }

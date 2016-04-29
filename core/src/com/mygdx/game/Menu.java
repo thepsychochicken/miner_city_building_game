@@ -15,4 +15,8 @@ public class Menu {
 
 		return returnValue;
 	}
+
+	public void addInput(int type) {
+
+	}
 }

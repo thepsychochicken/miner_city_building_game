@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import java.io.File;
+
 public class World {
 
 	private String worldName;
@@ -16,6 +18,19 @@ public class World {
 		this.seed = seed;
 		this.worldName = worldName;
 		world = new int[ 64 * 5 ][ 64 * 5 ][2];
+
+		File dir = new File("Saves/" + worldName);
+		if ( !dir.exists() ) {
+			dir.mkdirs();
+		}
+		dir = new File("Saves/" + worldName + "/worldinfo.txt");
+		if ( dir.exists() && dir.isFile() ) {
+			MyFileReader fileReader = new MyFileReader("Saves/" + worldName + "/worldinfo.txt");
+			System.out.println( "File contents: " + fileReader.readFile() );
+		}
+		else {
+			System.out.println("File not found!");	
+		}
 
 		for ( int i = 0; i < mapgen.length; i++ ) {
 			mapgen[i] = new MapGenerator();
@@ -57,7 +72,15 @@ public class World {
 				break;
 			}
 		}
+		if (blockType == TILE.DIRT && getBlockAt( x, y + 1, mapgenHeights ) == TILE.AIR)  {
+			blockType = TILE.GRASS;
+		}
+		blockType = mapgen[ 0 ].generateOre( blockType, x, y );
 		return blockType;
+	}
+
+	private void saveChunk(int actualChunkX, int actualChunkY, int worldChunkX, int worldChunkY) {
+
 	}
 
 	public void reloadMap() {
@@ -72,10 +95,7 @@ public class World {
 		for (int x = 0; x < world.length; x++ ) {
 			for (int y = 0; y < world[x].length; y++ ) {
 				blockType = getBlockAt( x, y, mapgenHeights );
-				if (blockType == TILE.DIRT && getBlockAt( x, y + 1, mapgenHeights ) == TILE.AIR)  {
-					blockType = TILE.GRASS;
-				}
-				blockType = mapgen[ 0 ].generateOre( blockType, x, y );
+				
 				world[x][y][0] = blockType;
 				world[x][y][1] = 0;
 			}
