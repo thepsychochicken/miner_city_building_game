@@ -27,7 +27,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	Pos mouse, mapMouse;
 	boolean mouseLeft, mouseRight;
 	int screenW, screenH;
-	int seed = 3213213;
+	int seed = 7786657;
 	int heightAmp = 30;
 	boolean leftArrowLast, rightArrowLast, downArrowLast, upArrowLast;
 	int zoom;
@@ -69,7 +69,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		personT = new Texture("person-placeholder.png");
 		
 		zoom = 30;
-		
+
+
 		//resize(screenW, screenH); // LibGDX will call this by itself after create()
 		
 		screenW = Gdx.graphics.getWidth();
@@ -77,7 +78,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		camera = new Camera( screenW, screenH );
 		lastTime = System.currentTimeMillis();
 
-		world = new World( "A world", seed );
+		world = new World( "A whole new world", seed, heightAmp );
 		world.reloadMap();
 	}
 
@@ -258,6 +259,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		else {
 			player.dirDown = false;
+		}
+
+		if ( Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
+			//System.out.println("Right was pressed");
+			player.jump();
 		}
 
 		if ( Gdx.input.isButtonPressed(Input.Buttons.LEFT) ) {

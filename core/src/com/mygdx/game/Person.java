@@ -14,7 +14,7 @@ public class Person {
 		this.center = new FloatPos( (double) 64, (double) 20 );
 		this.vel = new FloatPos( (double) 64, (double) 60 );
 		this.lastPos = new FloatPos( (double) 0, (double) 0 );
-		this.speed = 5;
+		this.speed = 10;
 		this.dirLeft = false;
 		this.dirRight = false;
 		this.dirDown = false;
@@ -30,15 +30,24 @@ public class Person {
 		// Down
 		if ( world.getTypeAt( ( int ) this.pos.x, ( int ) ( this.pos.y - 0.00001d ) ) == 0 ) {
 			this.vel.y -= 50 * timePassed;
+			this.inAir = true;
 		}
 		else if (world.getTypeAt( ( int ) this.pos.x, ( int ) ( this.pos.y - 0.000005d ) ) != 0) {
 			this.vel.y = 0;
+			this.inAir = false;
 			if (world.getTypeAt( ( int ) this.pos.x, ( int ) this.pos.y ) != 0) {
 				this.pos.y = ( ( int ) this.pos.y + 1 );
 			}
 			else {
 				this.pos.y = ( ( int ) this.pos.y );
 			}
+		}
+	}
+
+	public void jump() {
+		if (!this.inAir) {
+			this.vel.y = 30;
+			this.pos.y += 0.001;
 		}
 	}
 
@@ -72,8 +81,10 @@ public class Person {
 		}
 
 		if ( !this.dirRight && !this.dirLeft && !this.dirDown && !this.dirUp ) {
-			this.vel.x *= 0.9d;
-			this.vel.y *= 0.9d;
+			if (!this.inAir) {
+				this.vel.x *= 0.9d;
+				this.vel.y *= 0.999d;
+			}
 			if (Math.abs( this.vel.x ) < 0.01d ) {
 				this.vel.x = 0;
 			}

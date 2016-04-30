@@ -5,3 +5,5 @@ Things we need to do:
 	getting physics in place for all of class 'Person' - Cliff
 
 	fix cosine interpolation in MapGenerator.smooth();
+
+	make a GUI https://www.youtube.com/watch?v=W9N3XjixnjI

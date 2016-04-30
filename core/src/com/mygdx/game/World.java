@@ -4,21 +4,36 @@ import java.io.File;
 
 public class World {
 
+	public Pos chunkOffset
+
 	private String worldName;
 
 	private int seed, heightAmp;
 
+	private int chunkSize;
+
+	private Pos player;
 
 	private int[] mapgenLayers = {1,3};
 
 	private int[][][] world; // x = x pos, y = y pos, z1 = block type, z2 = link to object
 	public MapGenerator[] mapgen = new MapGenerator[2];
 
-	public World(String worldName, int seed) {
-		this.seed = seed;
+	public World(String worldName, int seed, int heightAmp) {
+		this.chunkSize = 64;
+		this.chunkOffset = new Pos( 0, 0 );
+		this.heightAmp = heightAmp;
 		this.worldName = worldName;
-		world = new int[ 64 * 5 ][ 64 * 5 ][2];
+		world = new int[ this.chunkSize * 5 ][ this.chunkSize * 5 ][2];
 
+		for ( int i = 0; i < mapgen.length; i++ ) {
+			mapgen[i] = new MapGenerator();
+			mapgen[i].setSeed( seed + 512 );
+			mapgen[i].setHeightAmp(heightAmp);
+		}
+	}
+
+	public void save() {
 		File dir = new File("Saves/" + worldName);
 		if ( !dir.exists() ) {
 			dir.mkdirs();
@@ -29,16 +44,21 @@ public class World {
 			System.out.println( "File contents: " + fileReader.readFile("worldinfo.txt") );
 		}
 		else {
-			String[] info = { "world-name:" + this.worldName, "seed:" + this.seed };
+			String[] info = { 
+				"world-name:" + this.worldName,
+				"seed:" + this.seed,
+				"player:" + this.player.x + "," + this.player.y
+			};
 			fileReader.writeFile("worldinfo.txt", info);
 			System.out.println( "File contents: " + fileReader.readFile("worldinfo.txt") );
 		}
+	}
 
-		for ( int i = 0; i < mapgen.length; i++ ) {
-			mapgen[i] = new MapGenerator();
-			mapgen[i].setSeed( seed + 512 );
-			mapgen[i].setHeightAmp(heightAmp);
-		}
+	public void checkChunk(Pos player) {
+		this.player.x = player.x;
+		this.player.y = player.y;
+		int newChunkX = ( int )( ( float )player.x / this.chunkSize )
+		this.chunkOffset.x
 	}
 
 	public void setSeed(int seed) {
@@ -108,4 +128,6 @@ public class World {
 		 world.length + ", height: " + world[0].length + " ) " + "(" + 
 		 ((double)( finish - start ) / totalBlocks) + " ms pr tile)" );
 	}
+
+
 }
